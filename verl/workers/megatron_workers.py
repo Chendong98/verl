@@ -15,6 +15,7 @@
 The main entry point to run the PPO algorithm
 """
 
+import importlib
 import os
 import logging
 import ray
@@ -83,6 +84,16 @@ class ActorRolloutRefWorker(MegatronWorker):
 
             if self.config.actor.megatron.sequence_parallel:
                 os.environ['CUDA_DEVICE_MAX_CONNECTIONS'] = '1'
+            
+            # mindspeed adapter need to init global var
+            if importlib.util.find_spec('mindspeed') is not None:
+                from megatron.training.arguments import parse_args, validate_args
+                from megatron.training.global_vars import set_global_vars
+                
+                args = parse_args(ignore_unkown_args=True)
+                validate_args(args, {})
+                set_global_vars(args, build_tokenizer=False)
+
             mpu.initialize_model_parallel(
                 tensor_model_parallel_size=self.config.actor.megatron.tensor_model_parallel_size,
                 pipeline_model_parallel_size=self.config.actor.megatron.pipeline_model_parallel_size,
