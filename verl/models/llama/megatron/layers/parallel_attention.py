@@ -213,7 +213,7 @@ class ParallelLlamaAttention(nn.Module):
         self._init_rope()
 
     def _init_rope(self):
-        if self.config.rope_scaling is None:
+        if self.config.rope_scaling is None or self.config.rope_scaling.get("rope_type", None) == "llama3":
             self.rotary_emb = LlamaRotaryEmbedding(
                 self.head_dim,
                 max_position_embeddings=self.max_position_embeddings,
