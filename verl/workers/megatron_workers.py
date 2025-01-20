@@ -90,7 +90,7 @@ class ActorRolloutRefWorker(MegatronWorker):
                 from megatron.training.arguments import parse_args, validate_args
                 from megatron.training.global_vars import set_global_variables
                 
-                args = parse_args(ignore_unkown_args=True)
+                args = parse_args(ignore_unknown_args=True)
                 validate_args(args, {})
                 set_global_variables(args, build_tokenizer=False)
 
@@ -147,6 +147,7 @@ class ActorRolloutRefWorker(MegatronWorker):
         # Step 1: initialize the tokenizer
         local_path = copy_local_path_from_hdfs(model_path)
         self.tokenizer = hf_tokenizer(local_path)
+        self.tokenizer.max_token_id = max(self.tokenizer.get_vocab().values())
 
         # Step 2: get the actor_model_config
         actor_model_config = AutoConfig.from_pretrained(local_path)

@@ -19,6 +19,7 @@ In megatron actor, the differences are:
 Note that our model doesn't have to be `MegatronModule` because we don't share embedding in the last layer
 """
 
+import importlib
 from functools import partial
 import pkg_resources
 from typing import Iterable, Dict
@@ -26,6 +27,8 @@ from typing import Iterable, Dict
 import torch
 from torch import nn
 import torch.distributed
+if importlib.util.find_spec('mindspeed') is not None:
+    import mindspeed.megatron_adaptor
 # from megatron import get_args
 from verl.utils.megatron.optimizer_config import OptimizerConfig
 from megatron.core import parallel_state as mpu

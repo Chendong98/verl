@@ -102,7 +102,7 @@ def main(config):
         ray.init(runtime_env={
             'env_vars': {
                 'TOKENIZERS_PARALLELISM': 'true', 
-                'NCCL_DEBUG': 'WARN'
+                'NCCL_DEBUG': 'WARN',
                 # Unlike CUDA, Ascend NPU requires visibility of all devices that need to engage in HCCL communication.
                 # use this environment variable to enable visiblity of all devices.
                 "RAY_EXPERIMENTAL_NOSET_ASCEND_RT_VISIBLE_DEVICES": "true"
