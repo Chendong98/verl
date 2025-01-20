@@ -48,8 +48,8 @@ elif package_version == '0.6.3':
 # this package support npu could be build via https://github.com/vllm-project/vllm/pull/8054
 elif package_version == '0.1dev3628+g06f1b1d.npu':
     vllm_version = '0.6.4'
-    from .vllm_v_0_6_4 import LLM
-    from .vllm_v_0_6_4 import LLMEngine
+    from .vllm_v_0_6_4.llm import LLM
+    from .vllm_v_0_6_4.llm import LLMEngine
     from .vllm_v_0_6_4 import parallel_state
 else:
     raise ValueError(

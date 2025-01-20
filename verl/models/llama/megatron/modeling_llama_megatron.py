@@ -588,7 +588,11 @@ class ParallelLlamaForCausalLMRmPadPP(nn.Module):
         # In the first pp, input_ids will be used, in other pp layers hidden_states will be used inside self.model
         batch_size, sequence_length = input_ids.shape
         # remove padding here
-        input_ids_rmpad, indices, cu_seqlens, max_seqlen_in_batch = unpad_input(input_ids.unsqueeze(dim=-1),
+        if is_flash_attn_2_available():
+            input_ids_rmpad, indices, cu_seqlens, max_seqlen_in_batch = unpad_input(input_ids.unsqueeze(dim=-1),
+                                                                                attention_mask)  # (total_nnz, 1)
+        else:
+            input_ids_rmpad, indices, cu_seqlens, max_seqlen_in_batch, _ = unpad_input(input_ids.unsqueeze(dim=-1),
                                                                                 attention_mask)  # (total_nnz, 1)
         # print(f'input_ids.shape = {input_ids.shape}, input_ids_rmpad.shape = {input_ids_rmpad.shape}, indices.shape = {indices.shape}, cu_seqlens[-1] = {cu_seqlens[-1]}')
         # pad input_ids to multiple of tp for all tp ranks

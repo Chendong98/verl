@@ -107,7 +107,7 @@ class Worker(Worker):
         self.cpu_model = None
 
     def init_device(self) -> None:
-        if self.device_config.device.type == "cuda":
+        if self.device_config.device.type in ("cuda", "npu"):
             # torch.distributed.all_reduce does not free the input tensor until
             # the synchronization point. This causes the memory usage to grow
             # as the number of all_reduce calls increases. This env var disables
@@ -129,7 +129,8 @@ class Worker(Worker):
             assert world_size != -1, "The world_size is set to -1, not initialized by TORCHRUN"
             self.parallel_config.world_size = world_size
 
-            _check_if_gpu_supports_dtype(self.model_config.dtype)
+            if self.device_config.device.type == "cuda":
+                _check_if_gpu_supports_dtype(self.model_config.dtype)
             torch.cuda.empty_cache()
             self.init_gpu_memory = torch.cuda.mem_get_info()[0]
         else:
@@ -138,7 +139,8 @@ class Worker(Worker):
         # Initialize the distributed environment.
         init_worker_distributed_environment(self.parallel_config, self.rank,
                                             self.distributed_init_method,
-                                            self.local_rank)
+                                            self.local_rank,
+                                            self.device_config.device.type)
         # Set random seed.
         set_random_seed(self.model_config.seed)    
 
@@ -267,12 +269,16 @@ def init_worker_distributed_environment(
     rank: int,
     distributed_init_method: Optional[str] = "env://",
     local_rank: int = -1,
+    device_type: str = None,
 ) -> None:
     """Initialize the distributed environment."""
     set_custom_all_reduce(not parallel_config.disable_custom_all_reduce)
 
     # NOTE(sgm) use tcp://localhost:xxxx will hang in HF setting without megatron
-    init_distributed_environment(parallel_config.world_size, rank, distributed_init_method, local_rank)
+    if device_type == "npu":
+        init_distributed_environment(parallel_config.world_size, rank, distributed_init_method, local_rank, "hccl")
+    else:
+        init_distributed_environment(parallel_config.world_size, rank, distributed_init_method, local_rank)
 
     ensure_model_parallel_initialized(
         tensor_model_parallel_size=parallel_config.tensor_parallel_size,

@@ -24,7 +24,7 @@ from vllm.config import CompilationLevel, VllmConfig
 from vllm.logger import init_logger
 from vllm.lora.worker_manager import LRUCacheWorkerLoRAManager
 from vllm.model_executor.models.interfaces import supports_lora
-from vllm.worker.model_runner import ModelRunner
+from vllm.worker.npu_model_runner import NPUModelRunner
 from vllm.prompt_adapter.worker_manager import LRUCacheWorkerPromptAdapterManager
 from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalRegistry
 from vllm.inputs import INPUT_REGISTRY, InputRegistry
@@ -47,7 +47,7 @@ class BatchType(IntEnum):
     # Batch is a mixture of prefill and decode.
     MIXED = 2
 
-class ModelRunner(ModelRunner):
+class ModelRunner(NPUModelRunner):
 
     def __init__(
         self,

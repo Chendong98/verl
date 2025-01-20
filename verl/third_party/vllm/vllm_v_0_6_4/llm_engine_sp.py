@@ -373,8 +373,8 @@ class LLMEngine(LLMEngine):
     # The GPUExecutor remove the Ray dependency
     @classmethod
     def _get_executor_cls(cls, engine_config: VllmConfig) -> Type[ExecutorBase]:
-        assert engine_config.device_config.device_type == "cuda", \
-            "Currently, the vllm in verl only support running on GPU"
+        assert engine_config.device_config.device_type in ("cuda", "npu"), \
+            "Currently, the vllm in verl only support running on GPU or NPU"
 
         if engine_config.parallel_config.world_size == 1:
             engine_config.load_config.load_format = "dummy_hf"
@@ -397,8 +397,8 @@ class LLMEngine(LLMEngine):
         engine_config = engine_args.create_engine_config()
         executor_class = cls._get_executor_cls(engine_config)
         # Initialize the cluster and specify the executor class.
-        assert engine_config.device_config.device_type == "cuda", \
-            "Currently, the vllm in verl only support running on GPU"
+        assert engine_config.device_config.device_type in ("cuda", "npu"), \
+            "Currently, the vllm in verl only support running on GPU and NPU"
 
         from .spmd_gpu_executor import SPMDGPUExecutor
         executor_class = SPMDGPUExecutor

@@ -84,9 +84,10 @@ class AllGatherPPModel:
 
     def _build_param_buffer(self, pp_rank):
         """Build the parameter buffer in each pp rank"""
-        if pkg_resources.parse_version(megatron_version) >= pkg_resources.parse_version('0.6.0') and pp_rank == self._pp_group:
+        if pkg_resources.parse_version(megatron_version) >= pkg_resources.parse_version('0.6.0') and pp_rank == self._pp_rank:
             # in megatron>=0.6, buffer is alread set to current pp_rank model.
             from verl.utils.memory_buffer import MemoryBuffer
+            # TODO: Of course we cant't do so many hard coding in the final version.
             source = self._this_rank_models[0].buffers[0].param_data
             self.memory_buffers[pp_rank] = {
                 # hard coding dtype so far.
@@ -98,7 +99,7 @@ class AllGatherPPModel:
             self.memory_buffers[pp_rank] = build_memory_buffer(weight_buffer_meta)
 
     def _build_param_references(self, pp_rank, maintain_weight=False):
-        if pkg_resources.parse_version(megatron_version) >= pkg_resources.parse_version('0.6.0') and pp_rank == self._pp_group:
+        if pkg_resources.parse_version(megatron_version) >= pkg_resources.parse_version('0.6.0') and pp_rank == self._pp_rank:
             # in megatron>=0.6, megatron will set the reference to buffer, we don't want to rebuild it.
             return
         model = self.pp_models[pp_rank]
@@ -138,7 +139,7 @@ class AllGatherPPModel:
             if pkg_resources.parse_version(megatron_version) >= pkg_resources.parse_version('0.6.0'):
                 # The param to buffer map is different in veRL and Megatron, so use param directly 
                 # instead of buffer in megatron>=0.6 so far.
-                for _, param in sorted(self.pp_models[cur_pp_rank].named_paramters()):
+                for _, param in sorted(self.pp_models[cur_pp_rank].named_parameters()):
                     dist.broadcast(tensor=param.data, src=global_src, group=self.pp_group, async_op=False)
             else:
                 # NOTE(sgm): the async op may cause memory leakage of the memory_buffer/pp_models

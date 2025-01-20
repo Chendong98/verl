@@ -536,7 +536,7 @@ class ParallelLlamaAttentionRmPad(ParallelLlamaAttention):
                 key_states,
                 value_states,
                 head_num,
-                attention_mask=attention_mask_npu,
+                atten_mask=attention_mask_npu,
                 scale=1.0 / math.sqrt(query_states.shape[-1]),
                 keep_prob=1,
                 input_layout="TND",
