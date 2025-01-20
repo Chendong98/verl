@@ -1,6 +1,6 @@
 环境信息：
 
-1.  NPU 基础镜像
+1. NPU 基础镜像，安装最新的 CANN-Toolkit & Kernel & NNAL
 2. 依赖库
 	1. Basic
 		1. `pip install -r verl/requirements`
@@ -26,4 +26,6 @@
 		1. `git clone https://github.com/chendong-1998/verl.git`
 		2. `cd verl && git checkout support-ascend-npu`
 
-然后可以配置模型、数据集路径后，执行 `bash example/ppo_trainer/run_deepseek_megatron.sh` 即可在 NPU 上运行。
+另外可能需要校对模型、数据集路径、修改 ` verl/third_party/vllm/__init__.py` 指定安装的 vllm develop 版本（可能形如 `0.1.dev3628+g06f1b1d.d20250116.npu`）使用 `0.6.4` 目录的 spmd vllm。
+
+最后执行 `bash example/ppo_trainer/run_llama_3.2_1b_megatron.sh` 即可在 NPU 上运行。

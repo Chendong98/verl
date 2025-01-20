@@ -25,7 +25,7 @@ python3 -m verl.trainer.main_ppo --config-path=./config --config-name='ppo_megat
     trainer.logger=['console'] \
     trainer.project_name='verl_megatron_gsm8k_examples' \
     trainer.experiment_name='llama_3.2_1b_function_rm' \
-    trainer.n_gpus_per_node=8 \
+    trainer.n_gpus_per_node=4 \
     trainer.nnodes=1 \
     trainer.save_freq=-1 \
     trainer.total_epochs=15 $@
