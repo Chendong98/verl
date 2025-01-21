@@ -5,12 +5,11 @@
 	1. veRL
 		1. `git clone https://github.com/chendong-1998/verl.git`
 		2. `cd verl && git checkout support-ascend-npu` 
-		3. `pip install -r verl/requirements`
-		4. `pip install pandas pyarrow`
+		3. `pip install -r requirements.txt`
 	2. vLLM on NPU
-		6. 参考该 PR https://github.com/vllm-project/vllm/pull/8054
-		7. `git clone -b 1130/npu_support https://github.com/Chendong98/vllm.git`
-		8. `cd vllm & VLLM_TARGET_DEVICE=npu pip install -e .` `
+		1. 参考该 PR https://github.com/vllm-project/vllm/pull/8054
+		2. `git clone -b 1130/npu_support https://github.com/Chendong98/vllm.git`
+		3. `cd vllm && VLLM_TARGET_DEVICE=npu pip install -e .`
 	3. Megatron
 		1. `git clone https://github.com/NVIDIA/Megatron-LM.git`
 		2. `git checkout core_r0.6.0`
