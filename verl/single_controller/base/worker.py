@@ -140,8 +140,10 @@ class Worker(WorkerHelper):
         master_addr = os.environ["MASTER_ADDR"]
         master_port = os.environ["MASTER_PORT"]
 
-        local_world_size = int(os.getenv("LOCAL_WORLD_SIZE", "1"))
-        local_rank = int(os.getenv("LOCAL_RANK", "0"))
+        # local_world_size = int(os.getenv("LOCAL_WORLD_SIZE", "1"))
+        # local_rank = int(os.getenv("LOCAL_RANK", "0"))
+        local_world_size = int(os.getenv("RAY_LOCAL_WORLD_SIZE", "1"))
+        local_rank = int(os.getenv("RAY_LOCAL_RANK", "0"))
 
         ###
         # [SUPPORT AMD: torch]

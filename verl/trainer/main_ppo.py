@@ -16,6 +16,8 @@ Note that we don't combine the main with ray_trainer as ray_trainer is used by o
 """
 from verl.trainer.ppo.ray_trainer import RayPPOTrainer
 from verl.utils.device import is_npu_available
+if is_npu_available:
+    import mindspeed.megatron_adaptor
 
 import os
 import ray
@@ -61,7 +63,8 @@ def main(config):
             'env_vars': {
                 'TOKENIZERS_PARALLELISM': 'true',
                 'NCCL_DEBUG': 'WARN',
-                'VLLM_LOGGING_LEVEL': 'WARN'
+                'VLLM_LOGGING_LEVEL': 'WARN',
+                "RAY_EXPERIMENTAL_NOSET_ASCEND_RT_VISIBLE_DEVICES": "true"
             }
         })
 
@@ -97,8 +100,12 @@ class TaskRunner:
 
         elif config.actor_rollout_ref.actor.strategy == 'megatron':
             assert config.actor_rollout_ref.actor.strategy == config.critic.strategy
-            from verl.workers.megatron_workers import ActorRolloutRefWorker, CriticWorker
-            from verl.single_controller.ray.megatron import NVMegatronRayWorkerGroup
+            if is_npu_available:
+                from verl.workers.mindspeed_workers import ActorRolloutRefWorker, CriticWorker
+                from verl.single_controller.ray.megatron import NVMegatronRayWorkerGroup
+            else:
+                from verl.workers.megatron_workers import ActorRolloutRefWorker, CriticWorker
+                from verl.single_controller.ray.megatron import NVMegatronRayWorkerGroup
             ray_worker_group_cls = NVMegatronRayWorkerGroup
 
         else:
@@ -132,7 +139,10 @@ class TaskRunner:
             if config.reward_model.strategy == 'fsdp':
                 from verl.workers.fsdp_workers import RewardModelWorker
             elif config.reward_model.strategy == 'megatron':
-                from verl.workers.megatron_workers import RewardModelWorker
+                if is_npu_available:
+                    from verl.workers.mindspeed_workers import RewardModelWorker
+                else:   # megatron
+                    from verl.workers.megatron_workers import RewardModelWorker
             else:
                 raise NotImplementedError
             role_worker_mapping[Role.RewardModel] = ray.remote(RewardModelWorker)
