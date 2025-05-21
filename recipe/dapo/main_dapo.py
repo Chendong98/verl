@@ -193,6 +193,7 @@ class TaskRunner:
             ray_worker_group_cls=ray_worker_group_cls,
             reward_fn=reward_fn,
             val_reward_fn=val_reward_fn,
+            device_name='npu'
         )
         trainer.init_workers()
         trainer.fit()

@@ -130,7 +130,7 @@ def offload_fsdp_model_to_cpu(model: FSDP, empty_cache: bool = True):
     if fsdp_version(model) == 2:
         offload_fsdp2_model_to_cpu(model, empty_cache)
         return
-
+    device_id = get_torch_device().current_device()
     assert isinstance(model, FSDP)
     # lazy init FSDP model
     _lazy_init(model, model)
@@ -140,6 +140,8 @@ def offload_fsdp_model_to_cpu(model: FSDP, empty_cache: bool = True):
             continue
         flat_param = handle.flat_param
         assert flat_param.data.data_ptr() == flat_param._local_shard.data_ptr() and id(flat_param.data) != id(flat_param._local_shard) and flat_param.data.size() == flat_param._local_shard.size()
+        from verl.utils.device import get_device_name
+        handle.flat_param_to(torch.device(f"{get_device_name()}:{device_id}"), non_blocking=True)
         handle.flat_param_to(torch.device("cpu"), non_blocking=True)
         # the following still keeps id(._local_shard) != id(.data)
         flat_param._local_shard = flat_param.data
