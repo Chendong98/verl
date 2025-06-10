@@ -209,10 +209,11 @@ class ParallelLlamaForCausalLM(nn.Module):
         )
 
 
+from transformers.utils import is_flash_attn_2_available
 if is_flash_attn_2_available():
     from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input  # noqa
 else:
-    from verl.bert_padding import index_first_axis, pad_input, unpad_input
+    from transformers.integrations.npu_flash_attention import pad_input, unpad_input, rearrange, index_first_axis
 
 class ParallelLlamaModelRmPad(nn.Module):
     """

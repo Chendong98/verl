@@ -325,7 +325,7 @@ if is_flash_attn_2_available():
 elif is_npu_available:
     import numpy as np
     import torch_npu
-    from verl.bert_padding import index_first_axis, pad_input, unpad_input
+    from transformers.integrations.npu_flash_attention import pad_input, unpad_input, rearrange, index_first_axis 
 
 def apply_rotary_pos_emb_rmpad(q, k, cos, sin, position_ids, indices, sequence_length):
     batch_size = position_ids.shape[0]

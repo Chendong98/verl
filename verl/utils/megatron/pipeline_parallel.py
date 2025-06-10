@@ -20,7 +20,8 @@ from .sequence_parallel import pad_to_sequence_parallel
 
 
 def compute_transformers_input_shapes(batches, meta_info):
-    from verl.bert_padding import unpad_input  # flash 2 is a must for Megatron
+    from transformers.integrations.npu_flash_attention import pad_input, unpad_input, rearrange, index_first_axis
+
 
     # pre-compute input shapes for each micro-batch at each pp stage
     input_shapes = []

@@ -32,7 +32,8 @@ if is_flash_attn_2_available():
 elif is_npu_available:
     import numpy as np
     import torch_npu
-    from verl.bert_padding import index_first_axis, pad_input, unpad_input
+    from transformers.integrations.npu_flash_attention import pad_input, unpad_input, rearrange, index_first_axis
+
 import torch
 from megatron.core import ModelParallelConfig, tensor_parallel
 from megatron.core import parallel_state as mpu

@@ -209,7 +209,7 @@ class ParallelQwen2ForCausalLM(nn.Module):
         )
 
 
-from verl.bert_padding import index_first_axis, pad_input, unpad_input  # noqa
+from transformers.integrations.npu_flash_attention import pad_input, unpad_input, rearrange, index_first_axis
 
 class ParallelQwen2ModelRmPad(nn.Module):
     """
